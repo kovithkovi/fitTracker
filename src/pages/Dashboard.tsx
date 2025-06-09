@@ -1,0 +1,116 @@
+
+import React from 'react';
+import { Calendar, Target, TrendingUp, Clock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+const Dashboard = () => {
+  // Mock data - in real app this would come from API
+  const todayStats = {
+    caloriesConsumed: 1450,
+    calorieGoal: 2000,
+    workoutsCompleted: 1,
+    currentWeight: 72.5,
+    sleepHours: 7.5,
+    mood: '😊'
+  };
+
+  const progressPercentage = (todayStats.caloriesConsumed / todayStats.calorieGoal) * 100;
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Welcome Back!
+        </h1>
+        <p className="text-muted-foreground">Let's make today amazing</p>
+      </div>
+
+      {/* Today's Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Calories Today</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{todayStats.caloriesConsumed}</div>
+            <p className="text-xs text-muted-foreground">
+              of {todayStats.calorieGoal} goal
+            </p>
+            <Progress value={progressPercentage} className="mt-2" />
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Workouts</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{todayStats.workoutsCompleted}</div>
+            <p className="text-xs text-muted-foreground">
+              completed today
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Current Weight</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{todayStats.currentWeight}kg</div>
+            <p className="text-xs text-muted-foreground">
+              -0.5kg this week
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Sleep & Mood</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{todayStats.sleepHours}h</div>
+            <p className="text-xs text-muted-foreground">
+              Mood: {todayStats.mood}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="p-4 text-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-200 border border-blue-200">
+              <div className="text-2xl mb-2">🍎</div>
+              <div className="text-sm font-medium">Log Food</div>
+            </button>
+            <button className="p-4 text-center rounded-lg bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-all duration-200 border border-green-200">
+              <div className="text-2xl mb-2">💪</div>
+              <div className="text-sm font-medium">Log Workout</div>
+            </button>
+            <button className="p-4 text-center rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all duration-200 border border-purple-200">
+              <div className="text-2xl mb-2">⚖️</div>
+              <div className="text-sm font-medium">Log Weight</div>
+            </button>
+            <button className="p-4 text-center rounded-lg bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 transition-all duration-200 border border-orange-200">
+              <div className="text-2xl mb-2">😴</div>
+              <div className="text-sm font-medium">Log Sleep</div>
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Dashboard;
