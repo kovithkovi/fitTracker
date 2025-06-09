@@ -1,9 +1,12 @@
-
 import React, { useState } from 'react';
-import { Calendar, Apple, Dumbbell, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, Apple, Dumbbell, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface Meal {
   id: number;
@@ -117,15 +120,31 @@ const DailyView = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              <span>
-                {selectedDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-auto justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate.toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => date && setSelectedDate(date)}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
               {isToday(selectedDate) && (
                 <Badge variant="secondary" className="ml-2">Today</Badge>
               )}
