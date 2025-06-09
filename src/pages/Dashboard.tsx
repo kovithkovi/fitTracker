@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Target, TrendingUp, Clock } from 'lucide-react';
+import { Calendar, Target, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
@@ -10,9 +10,7 @@ const Dashboard = () => {
     caloriesConsumed: 1450,
     calorieGoal: 2000,
     workoutsCompleted: 1,
-    currentWeight: 72.5,
-    sleepHours: 7.5,
-    mood: '😊'
+    currentWeight: 72.5
   };
 
   const progressPercentage = (todayStats.caloriesConsumed / todayStats.calorieGoal) * 100;
@@ -28,7 +26,7 @@ const Dashboard = () => {
       </div>
 
       {/* Today's Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Calories Today</CardTitle>
@@ -68,19 +66,6 @@ const Dashboard = () => {
             </p>
           </CardContent>
         </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sleep & Mood</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{todayStats.sleepHours}h</div>
-            <p className="text-xs text-muted-foreground">
-              Mood: {todayStats.mood}
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Quick Actions */}
@@ -103,8 +88,8 @@ const Dashboard = () => {
               <div className="text-sm font-medium">Log Weight</div>
             </button>
             <button className="p-4 text-center rounded-lg bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 transition-all duration-200 border border-orange-200">
-              <div className="text-2xl mb-2">😴</div>
-              <div className="text-sm font-medium">Log Sleep</div>
+              <div className="text-2xl mb-2">📅</div>
+              <div className="text-sm font-medium">Daily View</div>
             </button>
           </div>
         </CardContent>

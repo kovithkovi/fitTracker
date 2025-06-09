@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -6,8 +5,7 @@ import {
   Apple, 
   Dumbbell, 
   Scale, 
-  Moon, 
-  BarChart3,
+  Calendar,
   Menu,
   Sun,
   MoonIcon
@@ -33,8 +31,7 @@ const Layout = ({ children }: LayoutProps) => {
     { name: 'Food', href: '/food', icon: Apple },
     { name: 'Workouts', href: '/workouts', icon: Dumbbell },
     { name: 'Weight', href: '/weight', icon: Scale },
-    { name: 'Sleep & Mood', href: '/sleep-mood', icon: Moon },
-    { name: 'Weekly Review', href: '/review', icon: BarChart3 },
+    { name: 'Daily View', href: '/daily', icon: Calendar },
   ];
 
   const NavItems = ({ mobile = false }: { mobile?: boolean }) => (
