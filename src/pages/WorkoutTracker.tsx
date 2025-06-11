@@ -1,13 +1,12 @@
-
-import React, { useState } from 'react';
-import { Dumbbell, Plus, Clock, Save, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-
+import React, { useEffect, useState } from "react";
+import { Dumbbell, Plus, Clock, Save, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { addWorkout, getWorkoutsByDate } from "@/service/workoutService";
 interface Set {
   reps: number;
   weight: number;
@@ -27,49 +26,23 @@ interface Workout {
 }
 
 const WorkoutTracker = () => {
-  const [workouts, setWorkouts] = useState<Workout[]>([
-    {
-      id: 1,
-      date: '2024-06-09',
-      exercises: [
-        { 
-          name: 'Bench Press', 
-          sets: [
-            { reps: 12, weight: 80 },
-            { reps: 10, weight: 85 },
-            { reps: 8, weight: 90 }
-          ]
-        },
-        { 
-          name: 'Squats', 
-          sets: [
-            { reps: 10, weight: 100 },
-            { reps: 10, weight: 105 },
-            { reps: 8, weight: 110 },
-            { reps: 8, weight: 110 }
-          ]
-        }
-      ],
-      notes: 'Great session, felt strong today!',
-      duration: 45
-    }
-  ]);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
 
   const [currentWorkout, setCurrentWorkout] = useState({
     exercises: [] as Exercise[],
-    notes: '',
-    duration: ''
+    notes: "",
+    duration: "",
   });
 
   const [newExercise, setNewExercise] = useState({
-    name: '',
-    sets: [{ reps: '', weight: '' }]
+    name: "",
+    sets: [{ reps: "", weight: "" }],
   });
 
   const addSet = () => {
     setNewExercise({
       ...newExercise,
-      sets: [...newExercise.sets, { reps: '', weight: '' }]
+      sets: [...newExercise.sets, { reps: "", weight: "" }],
     });
   };
 
@@ -80,41 +53,41 @@ const WorkoutTracker = () => {
     }
   };
 
-  const updateSet = (setIndex: number, field: 'reps' | 'weight', value: string) => {
-    const updatedSets = newExercise.sets.map((set, index) => 
-      index === setIndex ? { ...set, [field]: value } : set
-    );
+  const updateSet = (setIndex: number, field: "reps" | "weight", value: string) => {
+    const updatedSets = newExercise.sets.map((set, index) => (index === setIndex ? { ...set, [field]: value } : set));
     setNewExercise({ ...newExercise, sets: updatedSets });
   };
 
   const addExercise = () => {
-    if (newExercise.name && newExercise.sets.every(set => set.reps && set.weight)) {
+    if (newExercise.name && newExercise.sets.every((set) => set.reps && set.weight)) {
       const exercise: Exercise = {
         name: newExercise.name,
-        sets: newExercise.sets.map(set => ({
+        sets: newExercise.sets.map((set) => ({
           reps: parseInt(set.reps),
-          weight: parseInt(set.weight)
-        }))
+          weight: parseInt(set.weight),
+        })),
       };
       setCurrentWorkout({
         ...currentWorkout,
-        exercises: [...currentWorkout.exercises, exercise]
+        exercises: [...currentWorkout.exercises, exercise],
       });
-      setNewExercise({ name: '', sets: [{ reps: '', weight: '' }] });
+      setNewExercise({ name: "", sets: [{ reps: "", weight: "" }] });
     }
   };
 
-  const saveWorkout = () => {
+  const saveWorkout = async () => {
     if (currentWorkout.exercises.length > 0) {
       const workout: Workout = {
         id: Date.now(),
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split("T")[0],
         exercises: currentWorkout.exercises,
         notes: currentWorkout.notes,
-        duration: parseInt(currentWorkout.duration) || 0
+        duration: parseInt(currentWorkout.duration) || 0,
       };
       setWorkouts([workout, ...workouts]);
-      setCurrentWorkout({ exercises: [], notes: '', duration: '' });
+      console.log(workout);
+      await addWorkout(workout);
+      setCurrentWorkout({ exercises: [], notes: "", duration: "" });
     }
   };
 
@@ -126,6 +99,14 @@ const WorkoutTracker = () => {
   const getTotalSets = (exercise: Exercise) => exercise.sets.length;
   const getTotalReps = (exercise: Exercise) => exercise.sets.reduce((total, set) => total + set.reps, 0);
 
+  useEffect(() => {
+    const getWorkOuts = async () => {
+      const today = new Date().toISOString().split("T")[0];
+      const response = await getWorkoutsByDate(today);
+      setWorkouts(response);
+    };
+    getWorkOuts();
+  });
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -166,7 +147,7 @@ const WorkoutTracker = () => {
                     Add Set
                   </Button>
                 </div>
-                
+
                 {newExercise.sets.map((set, setIndex) => (
                   <div key={setIndex} className="flex items-center gap-3 p-3 bg-muted/20 rounded-lg">
                     <span className="text-sm font-medium min-w-[60px]">Set {setIndex + 1}:</span>
@@ -175,7 +156,7 @@ const WorkoutTracker = () => {
                         type="number"
                         placeholder="Reps"
                         value={set.reps}
-                        onChange={(e) => updateSet(setIndex, 'reps', e.target.value)}
+                        onChange={(e) => updateSet(setIndex, "reps", e.target.value)}
                         className="w-20"
                       />
                       <span className="text-sm text-muted-foreground">reps @</span>
@@ -183,7 +164,7 @@ const WorkoutTracker = () => {
                         type="number"
                         placeholder="Weight"
                         value={set.weight}
-                        onChange={(e) => updateSet(setIndex, 'weight', e.target.value)}
+                        onChange={(e) => updateSet(setIndex, "weight", e.target.value)}
                         className="w-24"
                       />
                       <span className="text-sm text-muted-foreground">kg</span>
@@ -232,12 +213,17 @@ const WorkoutTracker = () => {
                         Remove
                       </Button>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                       {exercise.sets.map((set, setIndex) => (
-                        <div key={setIndex} className="flex items-center justify-between p-2 bg-background rounded text-sm">
+                        <div
+                          key={setIndex}
+                          className="flex items-center justify-between p-2 bg-background rounded text-sm"
+                        >
                           <span className="font-medium">Set {setIndex + 1}</span>
-                          <span>{set.reps} reps @ {set.weight}kg</span>
+                          <span>
+                            {set.reps} reps @ {set.weight}kg
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -289,7 +275,7 @@ const WorkoutTracker = () => {
             {workouts.length === 0 ? (
               <p className="text-muted-foreground">No workouts logged yet</p>
             ) : (
-              workouts.map(workout => (
+              workouts.map((workout) => (
                 <div key={workout.id} className="p-4 border rounded-lg space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="font-semibold">{new Date(workout.date).toLocaleDateString()}</div>
@@ -298,7 +284,7 @@ const WorkoutTracker = () => {
                       {workout.duration} min
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {workout.exercises.map((exercise, index) => (
                       <div key={index} className="space-y-2">
@@ -318,10 +304,8 @@ const WorkoutTracker = () => {
                       </div>
                     ))}
                   </div>
-                  
-                  {workout.notes && (
-                    <p className="text-sm text-muted-foreground italic">{workout.notes}</p>
-                  )}
+
+                  {workout.notes && <p className="text-sm text-muted-foreground italic">{workout.notes}</p>}
                 </div>
               ))
             )}
