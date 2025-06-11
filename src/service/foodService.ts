@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/food";
+const API_URL = `${import.meta.env.VITE_API_URL}/food`;
 // 🔹 Add new food entry
 export const addFood = async (food) => {
   console.log(food);

@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/food",
+      "destination": "https://fit-tracker-api.vercel.app/food"
+    },
+    {
+      "source": "/workout",
+      "destination": "https://fit-tracker-api.vercel.app/workout"
+    },
+    {
+      "source": "/dailyview",
+      "destination": "https://fit-tracker-api.vercel.app/dailyview"
+    }
+  ]
+}
