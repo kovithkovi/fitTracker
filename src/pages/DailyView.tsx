@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { getFoodByDate } from "@/service/foodService";
+import { getWorkoutsByDate } from "@/service/workoutService";
 
 interface Meal {
   id: number;
@@ -38,14 +38,6 @@ interface Workout {
 const DailyView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Mock data - in a real app, this would come from your database
-  const mockMeals: Meal[] = [
-    { id: 1, name: "Greek Yogurt with Berries", calories: 220, category: "breakfast", time: "08:30" },
-    { id: 2, name: "Grilled Chicken Salad", calories: 350, category: "lunch", time: "12:45" },
-    { id: 3, name: "Apple", calories: 80, category: "snack", time: "15:20" },
-    { id: 4, name: "Salmon with Quinoa", calories: 450, category: "dinner", time: "19:00" },
-  ];
-
   const mockWorkouts: Workout[] = [
     {
       id: 1,
@@ -74,7 +66,7 @@ const DailyView = () => {
   ];
 
   const formatDate = (date: Date) => {
-    return date.toISOString().split("T")[0];
+    return date.toLocaleDateString("en-CA");
   };
 
   const navigateDate = (direction: "prev" | "next") => {
@@ -89,8 +81,9 @@ const DailyView = () => {
   };
 
   const selectedDateString = formatDate(selectedDate);
-  const [dayMeals, setDayMeals] = useState([]); // In real app, filter by selectedDateString
-  const dayWorkouts = mockWorkouts.filter((workout) => workout.date === selectedDateString);
+  const [dayMeals, setDayMeals] = useState([]);
+  // const dayWorkouts = mockWorkouts.filter((workout) => workout.date === selectedDateString);
+  const [dayWorkouts, setDayWorkOuts] = useState([]);
 
   const totalCalories = dayMeals.reduce((sum, meal) => sum + meal.calories, 0);
 
@@ -108,14 +101,24 @@ const DailyView = () => {
   const getTotalReps = (exercise: Exercise) => exercise.sets.reduce((total, set) => total + set.reps, 0);
 
   useEffect(() => {
-    console.log(selectedDateString);
+    if (!selectedDate) return;
     console.log(selectedDate);
+
+    const selectedDateString = formatDate(selectedDate); // example
+    console.log(selectedDateString);
+
     const getfoodByDate = async () => {
       const response = await getFoodByDate(selectedDateString);
       setDayMeals(response);
     };
+    const getDayWorkOut = async () => {
+      const response = await getWorkoutsByDate(selectedDateString);
+      setDayWorkOuts(response);
+    };
     getfoodByDate();
-  }, []);
+    getDayWorkOut();
+  }, [selectedDate]);
+
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -224,7 +227,7 @@ const DailyView = () => {
               <p className="text-muted-foreground text-center py-8">No workouts logged for this day</p>
             ) : (
               dayWorkouts.map((workout) => (
-                <div key={workout.id} className="space-y-4">
+                <div key={workout._id} className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                     <span className="font-medium">Workout Duration</span>
                     <span className="text-lg font-bold text-primary">{workout.duration} min</span>
