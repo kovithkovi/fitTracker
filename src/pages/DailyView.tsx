@@ -80,9 +80,7 @@ const DailyView = () => {
     return date.toDateString() === today.toDateString();
   };
 
-  const selectedDateString = formatDate(selectedDate);
   const [dayMeals, setDayMeals] = useState([]);
-  // const dayWorkouts = mockWorkouts.filter((workout) => workout.date === selectedDateString);
   const [dayWorkouts, setDayWorkOuts] = useState([]);
 
   const totalCalories = dayMeals.reduce((sum, meal) => sum + meal.calories, 0);
@@ -108,15 +106,24 @@ const DailyView = () => {
     console.log(selectedDateString);
 
     const getfoodByDate = async () => {
-      const response = await getFoodByDate(selectedDateString);
-      setDayMeals(response);
+      try {
+        const response = await getFoodByDate(selectedDateString);
+        setDayMeals(response);
+      } catch (error) {
+        setDayMeals([]);
+      }
     };
     const getDayWorkOut = async () => {
-      const response = await getWorkoutsByDate(selectedDateString);
-      setDayWorkOuts(response);
+      try {
+        const response = await getWorkoutsByDate(selectedDateString);
+        setDayWorkOuts(response);
+      } catch (error) {
+        setDayWorkOuts([]);
+      }
     };
     getfoodByDate();
     getDayWorkOut();
+    console.log(dayMeals);
   }, [selectedDate]);
 
   return (
