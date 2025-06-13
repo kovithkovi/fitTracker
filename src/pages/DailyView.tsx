@@ -9,14 +9,6 @@ import { cn } from "@/lib/utils";
 import { getFoodByDate } from "@/service/foodService";
 import { getWorkoutsByDate } from "@/service/workoutService";
 
-interface Meal {
-  id: number;
-  name: string;
-  calories: number;
-  category: string;
-  time: string;
-}
-
 interface Set {
   reps: number;
   weight: number;
@@ -27,43 +19,8 @@ interface Exercise {
   sets: Set[];
 }
 
-interface Workout {
-  id: number;
-  date: string;
-  exercises: Exercise[];
-  notes: string;
-  duration: number;
-}
-
 const DailyView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-
-  const mockWorkouts: Workout[] = [
-    {
-      id: 1,
-      date: "2025-06-10",
-      exercises: [
-        {
-          name: "Bench Press",
-          sets: [
-            { reps: 12, weight: 80 },
-            { reps: 10, weight: 85 },
-            { reps: 8, weight: 90 },
-          ],
-        },
-        {
-          name: "Squats",
-          sets: [
-            { reps: 10, weight: 100 },
-            { reps: 10, weight: 105 },
-            { reps: 8, weight: 110 },
-          ],
-        },
-      ],
-      notes: "Great session, felt strong today!",
-      duration: 45,
-    },
-  ];
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-CA");

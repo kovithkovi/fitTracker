@@ -39,8 +39,8 @@ const WeightTracker = () => {
   useEffect(() => {
     const getWeights = async () => {
       const response = await getAllWeights();
-      console.log(response.data);
       setWeightEntries(response.data);
+      console.log(response.data);
     };
     getWeights();
   }, []);
@@ -161,7 +161,7 @@ const WeightTracker = () => {
               .slice(-5)
               .reverse()
               .map((entry, index) => (
-                <div key={entry.date} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                <div key={entry._id} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                   <div className="font-medium">
                     {new Date(entry.date).toLocaleDateString("en-US", {
                       weekday: "short",
