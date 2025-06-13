@@ -1,44 +1,49 @@
-
-import React, { useState } from 'react';
-import { Scale, TrendingDown, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useEffect, useState } from "react";
+import { Scale, TrendingDown, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { addWeight, getAllWeights } from "@/service/weightService";
 
 const WeightTracker = () => {
-  const [weightEntries, setWeightEntries] = useState([
-    { date: '2024-06-01', weight: 74.2 },
-    { date: '2024-06-03', weight: 73.8 },
-    { date: '2024-06-05', weight: 73.5 },
-    { date: '2024-06-07', weight: 73.1 },
-    { date: '2024-06-09', weight: 72.5 }
-  ]);
+  const [weightEntries, setWeightEntries] = useState([]);
 
-  const [newWeight, setNewWeight] = useState('');
+  const [newWeight, setNewWeight] = useState("");
   const [targetWeight, setTargetWeight] = useState(70);
 
-  const addWeightEntry = () => {
+  const addWeightEntry = async () => {
     if (newWeight) {
       const entry = {
-        date: new Date().toISOString().split('T')[0],
-        weight: parseFloat(newWeight)
+        date: new Date().toISOString().split("T")[0],
+        weight: parseFloat(newWeight),
       };
+      await addWeight(entry);
       setWeightEntries([...weightEntries, entry]);
-      setNewWeight('');
+      setNewWeight("");
     }
   };
 
   const currentWeight = weightEntries[weightEntries.length - 1]?.weight || 0;
   const previousWeight = weightEntries[weightEntries.length - 2]?.weight || currentWeight;
   const weightChange = currentWeight - previousWeight;
-  const progressToTarget = ((weightEntries[0]?.weight - currentWeight) / (weightEntries[0]?.weight - targetWeight)) * 100;
+  const progressToTarget =
+    ((weightEntries[0]?.weight - currentWeight) / (weightEntries[0]?.weight - targetWeight)) * 100;
 
-  const chartData = weightEntries.map(entry => ({
+  const chartData = weightEntries.map((entry) => ({
     ...entry,
-    displayDate: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    displayDate: new Date(entry.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
   }));
+
+  useEffect(() => {
+    const getWeights = async () => {
+      const response = await getAllWeights();
+      console.log(response.data);
+      setWeightEntries(response.data);
+    };
+    getWeights();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -76,9 +81,7 @@ const WeightTracker = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{targetWeight} kg</div>
-            <p className="text-xs text-muted-foreground">
-              {(currentWeight - targetWeight).toFixed(1)} kg to go
-            </p>
+            <p className="text-xs text-muted-foreground">{(currentWeight - targetWeight).toFixed(1)} kg to go</p>
           </CardContent>
         </Card>
 
@@ -89,9 +92,7 @@ const WeightTracker = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.max(0, progressToTarget).toFixed(0)}%</div>
-            <p className="text-xs text-muted-foreground">
-              towards goal
-            </p>
+            <p className="text-xs text-muted-foreground">towards goal</p>
           </CardContent>
         </Card>
       </div>
@@ -114,9 +115,7 @@ const WeightTracker = () => {
                 onChange={(e) => setNewWeight(e.target.value)}
               />
             </div>
-            <Button onClick={addWeightEntry}>
-              Add Entry
-            </Button>
+            <Button onClick={addWeightEntry}>Add Entry</Button>
           </div>
         </CardContent>
       </Card>
@@ -131,24 +130,18 @@ const WeightTracker = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="displayDate" 
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis 
-                  domain={['dataMin - 1', 'dataMax + 1']}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip 
-                  formatter={(value) => [`${value} kg`, 'Weight']}
+                <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
+                <YAxis domain={["dataMin - 1", "dataMax + 1"]} tick={{ fontSize: 12 }} />
+                <Tooltip
+                  formatter={(value) => [`${value} kg`, "Weight"]}
                   labelFormatter={(label) => `Date: ${label}`}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="weight" 
-                  stroke="hsl(var(--primary))" 
+                <Line
+                  type="monotone"
+                  dataKey="weight"
+                  stroke="hsl(var(--primary))"
                   strokeWidth={3}
-                  dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
+                  dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 6 }}
                   activeDot={{ r: 8 }}
                 />
               </LineChart>
@@ -164,20 +157,21 @@ const WeightTracker = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {weightEntries.slice(-5).reverse().map((entry, index) => (
-              <div key={entry.date} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
-                <div className="font-medium">
-                  {new Date(entry.date).toLocaleDateString('en-US', { 
-                    weekday: 'short', 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
+            {weightEntries
+              .slice(-5)
+              .reverse()
+              .map((entry, index) => (
+                <div key={entry.date} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                  <div className="font-medium">
+                    {new Date(entry.date).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <div className="font-semibold text-primary">{entry.weight} kg</div>
                 </div>
-                <div className="font-semibold text-primary">
-                  {entry.weight} kg
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </CardContent>
       </Card>
